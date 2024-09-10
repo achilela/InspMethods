@@ -1,5 +1,16 @@
 import streamlit as st
 
+  # Second digit
+second_digit_types = {
+        3: "MP related to general damage assessment",
+        4: "MP related to FAME+ Damage Families",
+        5: "MP on fittings",
+        6: "MP on internal parts",
+        7: "MP on supports and structures",
+        8: "MP on Coatings (internal and external) and insulation",
+        9: "MP on Welds"
+    }
+
 def classify_mp(code):
     if len(code) != 4 or not code.isdigit():
         return "Invalid input. Please enter a 4-digit code."
@@ -19,16 +30,7 @@ def classify_mp(code):
     else:
         classification.append("Unknown inspection type")
 
-    # Second digit
-    second_digit_types = {
-        3: "MP related to general damage assessment",
-        4: "MP related to FAME+ Damage Families",
-        5: "MP on fittings",
-        6: "MP on internal parts",
-        7: "MP on supports and structures",
-        8: "MP on Coatings (internal and external) and insulation",
-        9: "MP on Welds"
-    }
+  
     classification.append(second_digit_types.get(second_digit, "Unknown MP type"))
 
     # Third and Fourth digits
