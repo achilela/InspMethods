@@ -14,7 +14,7 @@ def classify_mp(code):
     # First digit
     if first_digit == 1:
         classification.append("MP External (Inspection performed from outside: non intrusive inspection)")
-    elif first_digit ==ptions
+    elif first_digit == options:
 for inspection_type, description in inspection_types.items():
     st.write(f"{inspection_type}: {description}")
 
