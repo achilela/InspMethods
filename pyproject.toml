@@ -1,0 +1,126 @@
+# Project Structure
+nim_rag/
+├── .devcontainer/
+│   ├── devcontainer.json
+│   └── Dockerfile
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+├── src/
+│   ├── nim_rag/
+│   │   ├── __init__.py
+│   │   ├── chat/
+│   │   │   ├── __init__.py
+│   │   │   └── interface.py
+│   │   ├── document/
+│   │   │   ├── __init__.py
+│   │   │   └── processor.py
+│   │   └── models/
+│   │       ├── __init__.py
+│   │       └── nvidia.py
+├── tests/
+│   └── test_chat.py
+├── .env.example
+├── .gitignore
+├── docker-compose.yml
+├── Dockerfile
+├── LICENSE
+├── pyproject.toml
+└── README.md
+
+# pyproject.toml
+[project]
+name = "nim_rag"
+version = "0.1.0"
+description = "RAG application using NVIDIA NIM and LlamaIndex"
+requires-python = ">=3.9"
+dependencies = [
+    "llama-index==0.11.15",
+    "llama-index-readers-file",
+    "llama-index-llms-nvidia",
+    "llama-index-embeddings-nvidia",
+    "python-dotenv",
+    "streamlit",
+    "openai",
+    "pandas",
+    "PyPDF2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "black",
+    "isort",
+    "mypy",
+    "ruff",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+
+[tool.black]
+line-length = 88
+target-version = ['py39']
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+
+[tool.ruff]
+select = ["E", "F", "B"]
+ignore = ["E501"]
+
+# .devcontainer/devcontainer.json
+{
+    "name": "NIM RAG Development",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": ".."
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-python.black-formatter",
+                "ms-python.isort"
+            ]
+        }
+    },
+    "remoteEnv": {
+        "PYTHONPATH": "${containerWorkspaceFolder}/src"
+    }
+}
+
+# docker-compose.yml
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8501:8501"
+    volumes:
+      - .:/app
+    environment:
+      - NVIDIA_API_KEY=${NVIDIA_API_KEY}
+
+# Dockerfile
+FROM python:3.9-slim
+
+WORKDIR /app
+
+COPY pyproject.toml .
+COPY src/ ./src/
+
+RUN pip install --no-cache-dir .
+
+EXPOSE 8501
+
+CMD ["streamlit", "run", "src/nim_rag/app.py"]
